@@ -63,3 +63,84 @@ const galleryItems = [
     description: 'Lighthouse Coast Sea',
   },
 ];
+
+const galleryContainer = document.querySelector(".js-gallery");
+const lightboxRef = document.querySelector(".js-lightbox");
+const lightboxImageRef = document.querySelector(".lightbox__image");
+const lightboxOverlayRef = document.querySelector('.lightbox__overlay');
+const closeButtonRef = document.querySelector('.lightbox__button');
+
+const galleryMarkup = createGalleryItems(galleryItems);
+
+galleryContainer.insertAdjacentHTML("beforeend", galleryMarkup);
+galleryContainer.addEventListener("click", onGalleryContainerClick);
+closeButtonRef.addEventListener('click', onCloseModal);
+lightboxOverlayRef.addEventListener('click', onCloseModal);
+
+function createGalleryItems(items) {
+  return items
+    .map(({ preview, original, description }) =>
+    {
+      return `<li class="gallery__item">
+  <a
+     class="gallery__link"
+     href="${original}"
+   >
+     <img
+       class="gallery__image"
+       src="${preview}"
+       data-source="${original}"
+       data-alt="${description}"
+      
+     />
+   </a>
+ </li>`;
+    })
+    .join("");
+  
+}
+
+function onGalleryContainerClick(evt) {
+  const isGalleryItem = evt.target.nodeName=="IMG";
+  if (!isGalleryItem) { return;  }
+  onOpenModal(evt);
+}
+
+function onOpenModal(evt)
+{
+  evt.preventDefault();
+  window.addEventListener('keydown', onKeyPress);
+  const currentImg = evt.target;
+  lightboxRef.classList.add('is-open');
+  lightboxImageRef.src = currentImg.dataset.source;
+  lightboxImageRef.alt = currentImg.dataset.alt;
+}
+
+function onCloseModal(evt) {
+ 
+  // if (evt.currentTarget === evt.target) {
+    lightboxRef.classList.remove('is-open');
+    lightboxImageRef.removeAttribute('src');
+    lightboxImageRef.removeAttribute('alt');
+  // }
+}
+
+function onKeyPress(evt) {
+  const esc = evt.code === 'Escape';
+  const arrowRight = evt.code === 'ArrowRight';
+  const arrowLeft = evt.code === 'ArrowLeft';
+  if (esc) {
+    onCloseModal(evt);
+  }
+
+   if (arrowRight) {
+   
+     console.log(">>>");
+     lightboxImageRef.src = 'https://cdn.pixabay.com/photo/2019/05/17/04/35/lighthouse-4208843_1280.jpg';
+ 
+  }
+  
+  if (arrowLeft) {
+    console.log("<<<");
+  }
+}
