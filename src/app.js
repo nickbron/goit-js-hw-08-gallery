@@ -70,17 +70,17 @@ const lightboxImageRef = document.querySelector(".lightbox__image");
 const lightboxOverlayRef = document.querySelector('.lightbox__overlay');
 const closeButtonRef = document.querySelector('.lightbox__button');
 
-const galleryMarkup = createGalleryItems(galleryItems);
 
+const galleryMarkup = createGalleryItems(galleryItems);
 galleryContainer.insertAdjacentHTML("beforeend", galleryMarkup);
+
 galleryContainer.addEventListener("click", onGalleryContainerClick);
-closeButtonRef.addEventListener('click', onCloseModal);
-lightboxOverlayRef.addEventListener('click', onCloseModal);
+
 
 function createGalleryItems(items) {
   return items
-    .map(({ preview, original, description }) =>
-    {
+    .map(({ preview, original, description },index) =>
+    {  
       return `<li class="gallery__item">
   <a
      class="gallery__link"
@@ -91,13 +91,14 @@ function createGalleryItems(items) {
        src="${preview}"
        data-source="${original}"
        data-alt="${description}"
+       data-idx="${index}"
       
      />
    </a>
  </li>`;
     })
     .join("");
-  
+
 }
 
 function onGalleryContainerClick(evt) {
@@ -109,26 +110,31 @@ function onGalleryContainerClick(evt) {
 function onOpenModal(evt)
 {
   evt.preventDefault();
+  
   window.addEventListener('keydown', onKeyPress);
+  closeButtonRef.addEventListener('click', onCloseModal, {once:true});
+  lightboxOverlayRef.addEventListener('click', onCloseModal, {once:true});
   const currentImg = evt.target;
   lightboxRef.classList.add('is-open');
   lightboxImageRef.src = currentImg.dataset.source;
   lightboxImageRef.alt = currentImg.dataset.alt;
+  lightboxImageRef.setAttribute('data-idx', currentImg.dataset.idx);
+   
 }
 
 function onCloseModal(evt) {
- 
-  // if (evt.currentTarget === evt.target) {
     lightboxRef.classList.remove('is-open');
     lightboxImageRef.removeAttribute('src');
-    lightboxImageRef.removeAttribute('alt');
-  // }
+  lightboxImageRef.removeAttribute('alt');
+  window.removeEventListener('keydown', onKeyPress);
 }
 
 function onKeyPress(evt) {
+  
   const esc = evt.code === 'Escape';
   const arrowRight = evt.code === 'ArrowRight';
   const arrowLeft = evt.code === 'ArrowLeft';
+  let index;
   if (esc) {
     onCloseModal(evt);
   }
@@ -136,11 +142,30 @@ function onKeyPress(evt) {
    if (arrowRight) {
    
      console.log(">>>");
-     lightboxImageRef.src = 'https://cdn.pixabay.com/photo/2019/05/17/04/35/lighthouse-4208843_1280.jpg';
- 
+
+     index = Number(lightboxImageRef.dataset.idx);
+     
+    if (index === galleryItems.length) {
+    index = 0;
+  }
+       
+     lightboxImageRef.src = galleryItems[index].original;
+     lightboxImageRef.dataset.idx = index + 1;
+     console.log(lightboxImageRef.dataset.idx);  
   }
   
   if (arrowLeft) {
     console.log("<<<");
+   
+    index = Number(lightboxImageRef.dataset.idx);
+   
+      if (index < 0) {
+      index = galleryItems.length + index;
+    }
+      
+      lightboxImageRef.src = galleryItems[index].original;
+      lightboxImageRef.dataset.idx = index-1;
+      console.log(lightboxImageRef.dataset.idx);   
   }
 }
+
