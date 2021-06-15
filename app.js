@@ -141,31 +141,24 @@ function onKeyPress(evt) {
 
    if (arrowRight) {
    
-     console.log(">>>");
-
-     index = Number(lightboxImageRef.dataset.idx);
+    index = Number(lightboxImageRef.dataset.idx);
      
     if (index === galleryItems.length) {
     index = 0;
-  }
-       
+  }      
      lightboxImageRef.src = galleryItems[index].original;
      lightboxImageRef.dataset.idx = index + 1;
-     console.log(lightboxImageRef.dataset.idx);  
   }
   
   if (arrowLeft) {
-    console.log("<<<");
-   
+     
     index = Number(lightboxImageRef.dataset.idx);
    
       if (index < 0) {
       index = galleryItems.length + index;
     }
-      
       lightboxImageRef.src = galleryItems[index].original;
       lightboxImageRef.dataset.idx = index-1;
-      console.log(lightboxImageRef.dataset.idx);   
   }
 }
 
